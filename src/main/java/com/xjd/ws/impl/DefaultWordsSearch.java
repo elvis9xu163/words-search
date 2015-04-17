@@ -109,6 +109,7 @@ public class DefaultWordsSearch implements WordsSearch {
 					defaultWord.setAttachment(attachment);
 					wordResult = new DefaultWordResult();
 					wordResult.setWord(defaultWord);
+					wordResult.setIndexes(new LinkedList<Integer>());
 					defaultResult.getResultMap().put(word, wordResult);
 				}
 				wordResult.getIndexes().add(index[0]);

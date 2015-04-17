@@ -1,6 +1,7 @@
 package com.xjd.ws;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 搜索结果
@@ -47,6 +48,6 @@ public interface Result {
 
 		int getEndIndex();
 
-		List<Word> getWords();
+		Set<Word> getWords();
 	}
 }

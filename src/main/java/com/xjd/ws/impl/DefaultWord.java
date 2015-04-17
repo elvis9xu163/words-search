@@ -37,4 +37,19 @@ public class DefaultWord implements Word {
 		this.attachment = attachment;
 	}
 
+	@Override
+	public int hashCode() {
+		return word.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof Word) {
+			return word.equals(((Word) o).getWord());
+		}
+		return false;
+	}
 }

@@ -1,8 +1,6 @@
 package com.xjd.ws.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.xjd.ws.Result;
 import com.xjd.ws.Word;
@@ -13,20 +11,51 @@ public class DefaultResult implements Result {
 
 	@Override
 	public List<WordResult> wordResults() {
-		// TODO Auto-generated method stub
 		if (resultMap == null) {
 			return Collections.emptyList();
+		} else {
+			return new ArrayList<WordResult>(resultMap.values());
 		}
-		return null;
 	}
 
 	@Override
 	public List<RangeResult> rangeResults() {
-		// TODO Auto-generated method stub
 		if (resultMap == null) {
 			return Collections.emptyList();
+		} else {
+			List<RangeResult> list = new ArrayList<RangeResult>(resultMap.size());
+			for (DefaultWordResult wordResult : resultMap.values()) {
+				int wordLength = wordResult.getWord().getWord().length();
+				for (int index : wordResult.getIndexes()) {
+					boolean found = false;
+					for (RangeResult rangeResult : list) {
+						if ((rangeResult.getBeginIndex() <= index && index <= rangeResult.getEndIndex())
+								|| (rangeResult.getBeginIndex() <= index + wordLength && index + wordLength <= rangeResult
+										.getEndIndex())
+								|| (index < rangeResult.getBeginIndex() && index + wordLength > rangeResult
+										.getEndIndex())) {
+							if (index < rangeResult.getBeginIndex()) {
+								((DefaultRangeResult) rangeResult).setBeginIndex(index);
+							}
+							if (index + wordLength > rangeResult.getEndIndex()) {
+								((DefaultRangeResult) rangeResult).setEndIndex(index + wordLength);
+							}
+							rangeResult.getWords().add(wordResult.getWord());
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						DefaultRangeResult rangeResult = new DefaultRangeResult();
+						rangeResult.setBeginIndex(index);
+						rangeResult.setEndIndex(index + wordLength);
+						rangeResult.getWords().add(wordResult.getWord());
+						list.add(rangeResult);
+					}
+				}
+			}
+			return list;
 		}
-		return null;
 	}
 
 	/** @return the resultMap */
@@ -64,5 +93,39 @@ public class DefaultResult implements Result {
 			return indexes;
 		}
 
+	}
+
+	public static class DefaultRangeResult implements RangeResult {
+
+		protected int beginIndex;
+		protected int endIndex;
+		protected Set<Word> words = new HashSet<Word>();
+
+		@Override
+		public int getBeginIndex() {
+			return beginIndex;
+		}
+
+		public void setBeginIndex(int beginIndex) {
+			this.beginIndex = beginIndex;
+		}
+
+		@Override
+		public int getEndIndex() {
+			return endIndex;
+		}
+
+		public void setEndIndex(int endIndex) {
+			this.endIndex = endIndex;
+		}
+
+		@Override
+		public Set<Word> getWords() {
+			return words;
+		}
+
+		public void setWords(Set<Word> words) {
+			this.words = words;
+		}
 	}
 }
